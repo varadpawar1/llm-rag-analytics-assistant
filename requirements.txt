@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langchain
+llama-index
+faiss-cpu
+openai
+ragas
+pydantic
+python-dotenv
+streamlit
