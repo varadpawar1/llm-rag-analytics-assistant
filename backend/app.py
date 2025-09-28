@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from backend.rag.embeddings import embed_query
 from backend.rag.retriever import search
+from backend.rag.generate import compose_answer
 
 app = FastAPI(title="RAG Analytics Assistant")
 
@@ -21,9 +22,10 @@ def ask(q: Query):
     qvec = embed_query(q.question)
     # 2) retrieve top-k relevant docs/snippets
     hits = search(qvec, top_k=q.top_k)
-    # 3) return for now (generation comes next)
+    # 3) generate a concise answer grounded in context
+    gen = compose_answer(q.question, hits)
     return {
-        "answer": "Retrieved top passages (generation coming next).",
-        "citations": [{"score": h["score"], **h["meta"]} for h in hits],
-        "snippets": [h["text"] for h in hits]
+        "answer": gen["answer"],
+        "citations": gen["citations"],
+        "snippets": [h["text"] for h in hits]  # keep for debugging/demo
     }
